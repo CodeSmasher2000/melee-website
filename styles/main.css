@@ -1,0 +1,49 @@
+:root {
+  --ui-bg: rgba(10, 22, 10, 0.55);
+  --ui-border: rgba(255, 255, 255, 0.22);
+  --ui-text: #f4f8ff;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(
+    circle at 20% 10%,
+    #2f5167 0%,
+    #8eff04 55%,
+    #d505ff 100%
+  );
+  color: var(--ui-text);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#container {
+  width: 100%;
+  height: 100%;
+}
+
+#info {
+  position: fixed;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-bg);
+  backdrop-filter: blur(7px);
+  z-index: 5;
+  letter-spacing: 0.2px;
+  font-size: 14px;
+}
+
+#info a {
+  color: #9ec9ff;
+  text-decoration: none;
+}
+
+#info a:hover {
+  text-decoration: underline;
+}
