@@ -27,7 +27,7 @@ export async function createOceanWorld(renderer, container) {
   );
   const loader = new GLTFLoader();
   loader.setDRACOLoader(dracoLoader);
-  loader.setPath("models/gltf/");
+  loader.setPath("/models/gltf/");
 
   const clock = new THREE.Clock();
   const sun = new THREE.Vector3();
@@ -106,7 +106,7 @@ export async function createOceanWorld(renderer, container) {
   // Load font and create text geometry
   const fontLoader = new FontLoader();
   fontLoader.load(
-    "assets/fonts/MPLUSRounded1c-Regular.typeface.json",
+    "/assets/fonts/MPLUSRounded1c-Regular.typeface.json",
     (font) => {
       const textGeometry = new TextGeometry("melee", {
         font: font,
@@ -237,14 +237,14 @@ export async function createOceanWorld(renderer, container) {
   // const videoObject = createVideoObject(scene, videoElement);
   const videoObject = createVideoObject(scene, videoElement, {
     useImage: true,
-    imagePath: "assets/albumcover.jpg", // Set to true to use a static image instead of video
+    imagePath: "/assets/albumcover.jpg", // Set to true to use a static image instead of video
   });
 
   // Define createBustPedestal function before calling it
   async function createBustPedestal(x) {
     // bust GLB 2
     try {
-      const gltf = await loader.loadAsync("tennyson-bust.glb");
+      const gltf = await loader.loadAsync("/models/gltf/tennyson-bust.glb");
       const bust = gltf.scene;
       bust.rotation.y = Math.PI;
 
