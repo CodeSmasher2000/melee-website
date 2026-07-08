@@ -99,7 +99,7 @@ export async function createOceanWorld(renderer, container) {
     roughness: 0.1,
     metalness: 0.9,
     emissive: 0x121314,
-    color: 0x00fff2,
+    color: 0xf19df2,
   });
   let mesh;
 
@@ -130,6 +130,8 @@ export async function createOceanWorld(renderer, container) {
   const geometry = new THREE.PlaneGeometry(10, 10);
   mesh = new THREE.Mesh(geometry, material);
   mesh.position.z = smallDevice ? 0 : -70;
+  mesh.position.y = smallDevice ? 220 : 270;
+
   scene.add(mesh);
 
   // Add 3 decorative cubes in front of the text with pastel colors
@@ -145,6 +147,8 @@ export async function createOceanWorld(renderer, container) {
 
   const textureLoader = new THREE.TextureLoader();
   const clickableCubes = [];
+  const clickableCubesLights = [];
+  const clickableCubeHalos = [];
   const clickableBusts = [];
 
   // Raycaster for click detection
@@ -152,7 +156,7 @@ export async function createOceanWorld(renderer, container) {
   const mouse = new THREE.Vector2();
   const cubeMesh = new THREE.MeshStandardMaterial({
     color: 0xffffff,
-    roughness: 0.1,
+    roughness: 0.03,
     metalness: 1.0,
     emissive: 0x121314,
   });
@@ -168,12 +172,13 @@ export async function createOceanWorld(renderer, container) {
       });
       cubeMaterial = new THREE.MeshStandardMaterial({
         color: 0xffffff,
-        roughness: 0.1,
+        roughness: 0.03,
         metalness: 1.0,
         emissive: 0x121314,
+        emissiveIntensity: 0.5,
       });
     }
-    if (index === 1) {
+    else if (index === 1) {
       textureLoader.load("/assets/youtube.svg", (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         cubeMaterial.map = texture;
@@ -181,12 +186,13 @@ export async function createOceanWorld(renderer, container) {
       });
       cubeMaterial = new THREE.MeshStandardMaterial({
         color: 0xffffff,
-        roughness: 0.1,
+        roughness: 0.03,
         metalness: 1.0,
         emissive: 0x121314,
+        emissiveIntensity: 0.5,
       });
     }
-    if (index === 2) {
+    else if (index === 2) {
       textureLoader.load("/assets/Instagram.svg", (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         cubeMaterial.map = texture;
@@ -194,12 +200,13 @@ export async function createOceanWorld(renderer, container) {
       });
       cubeMaterial = new THREE.MeshStandardMaterial({
         color: 0xffffff,
-        roughness: 0.1,
+        roughness: 0.03,
         metalness: 1.0,
         emissive: 0x121314,
+        emissiveIntensity: 0.5,
       });
     }
-    if (index === 3) {
+    else if (index === 3) {
       textureLoader.load("/assets/mail.png", (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         cubeMaterial.map = texture;
@@ -210,12 +217,15 @@ export async function createOceanWorld(renderer, container) {
         roughness: 0.1,
         metalness: 1.0,
         emissive: 0x121314,
+        emissiveIntensity: 0.5,
       });
     } else {
       cubeMaterial = new THREE.MeshStandardMaterial({
         color: color,
-        roughness: 0.1,
+        roughness: 0.03,
         metalness: 1.0,
+        emissive: 0x111111,
+        emissiveIntensity: 0.4,
       });
     }
 
@@ -230,6 +240,25 @@ export async function createOceanWorld(renderer, container) {
     cubeMesh.userData.url = cubeUrls[index]; // Store the URL
     scene.add(cubeMesh);
     clickableCubes.push(cubeMesh);
+
+    const cubePulseLight = new THREE.PointLight(0xff66cc, 2.2, 220, 2);
+    cubePulseLight.position.copy(cubeMesh.position).add(new THREE.Vector3(0, 0, 22));
+    scene.add(cubePulseLight);
+    clickableCubesLights.push(cubePulseLight);
+
+    const haloGeom = new THREE.TorusGeometry(cubeSize * 0.55, cubeSize * 0.07, 16, 100);
+    const haloMat = new THREE.MeshBasicMaterial({
+      color: 0xff66cc,
+      transparent: true,
+      opacity: 0.001,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const cubeHalo = new THREE.Mesh(haloGeom, haloMat);
+    cubeHalo.rotation.x = Math.PI / 2;
+    cubeHalo.position.copy(cubeMesh.position).add(new THREE.Vector3(0, -cubeSize * 0.75, 0));
+    scene.add(cubeHalo);
+    clickableCubeHalos.push(cubeHalo);
   });
 
   // Setup video object
@@ -290,15 +319,34 @@ export async function createOceanWorld(renderer, container) {
   await createBustPedestal(smallDevice ? -70 : -120);
   await createBustPedestal(smallDevice ? 70 : 120);
 
-  // Add a spotlight aimed directly at the video cubes
-  const light = new THREE.SpotLight(0xffffff, 10);
-  light.position.set(0, 80, 200);
-  light.target.position.set(0, 50, 0);
-  light.angle = Math.PI / 4;
-  light.penumbra = 0.2;
-  light.distance = 500;
-  scene.add(light);
-  scene.add(light.target);
+  // Add a strong camera-linked spotlight aimed at the logo cubes
+  const cubeLight = new THREE.SpotLight(0xffffff, 12, 400, Math.PI / 5, 0.4, 2);
+  cubeLight.position.set(0, 80, 120);
+  cubeLight.penumbra = 0.5;
+  cubeLight.decay = 2;
+  cubeLight.target = new THREE.Object3D();
+  scene.add(cubeLight);
+  scene.add(cubeLight.target);
+
+  // Add a softer rim spotlight behind the logo cubes to make them pop
+  const rimLight = new THREE.SpotLight(0x88c8ff, 5, 400, Math.PI / 4, 0.6, 2);
+  rimLight.position.set(0, 40, 20);
+  rimLight.penumbra = 0.6;
+  rimLight.target = new THREE.Object3D();
+  scene.add(rimLight);
+  scene.add(rimLight.target);
+
+  // Add a dedicated fill light for the logo cubes
+  const cubeFillLight = new THREE.PointLight(0xffffff, 5, 220, 2);
+  cubeFillLight.position.set(0, 70, 20);
+  scene.add(cubeFillLight);
+
+  // Add a softer top-down directional light above the logo cubes
+  const topDownLight = new THREE.DirectionalLight(0xffffff, 10);
+  topDownLight.position.set(0, 160, 0);
+  topDownLight.target = new THREE.Object3D();
+  scene.add(topDownLight);
+  scene.add(topDownLight.target);
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.maxPolarAngle = Math.PI / 2.1; // Limit vertical rotation to prevent going below the water
@@ -349,15 +397,14 @@ export async function createOceanWorld(renderer, container) {
   function renderFrame() {
     const time = performance.now() * 0.001;
 
-    if (mesh) {
-      mesh.position.y = Math.sin(time) * 20 + 10;
-      mesh.rotation.x = time * 0.5;
-      // mesh.rotation.z = time * 0.51;
-    }
-
     // Update clickable cubes to follow camera
     const cameraDirection = new THREE.Vector3();
     camera.getWorldDirection(cameraDirection);
+    const cubeTargetPosition = camera.position
+      .clone()
+      .addScaledVector(cameraDirection, 80)
+      .add(new THREE.Vector3(0, -60, 0));
+
     clickableCubes.forEach((cube, index) => {
       // Position cube in front of camera
       cube.position.copy(camera.position).addScaledVector(cameraDirection, 80);
@@ -366,6 +413,46 @@ export async function createOceanWorld(renderer, container) {
       // Move them lower on the screen
       cube.position.y -= 60;
     });
+
+    clickableCubesLights.forEach((light, index) => {
+      const cube = clickableCubes[index];
+      light.position.copy(cube.position).add(new THREE.Vector3(0, 0, 22));
+      light.intensity = 1.4 + Math.sin(time * 4 + index * 1.2) * 0.8;
+    });
+
+    clickableCubeHalos.forEach((halo, index) => {
+      const cube = clickableCubes[index];
+      halo.position.copy(cube.position).add(new THREE.Vector3(0, -cubeSize * 0.75, 0));
+      const pulse = 0.12 + Math.abs(Math.sin(time * 3 + index * 1.5)) * 0.06;
+      halo.material.opacity = pulse;
+      const scale = 1 + Math.sin(time * 3 + index * 1.5) * 0.04;
+      halo.scale.set(scale, scale, scale);
+    });
+
+    if (cubeLight) {
+      const lightPosition = camera.position.clone().add(new THREE.Vector3(0, 40, 20));
+      cubeLight.position.copy(lightPosition);
+      cubeLight.target.position.copy(cubeTargetPosition);
+      cubeLight.target.updateMatrixWorld();
+    }
+
+    if (rimLight) {
+      const rimPosition = camera.position.clone().add(new THREE.Vector3(0, 20, 20));
+      rimLight.position.copy(rimPosition);
+      rimLight.target.position.copy(cubeTargetPosition);
+      rimLight.target.updateMatrixWorld();
+    }
+
+    if (topDownLight) {
+      const topPosition = camera.position.clone().add(new THREE.Vector3(0, 140, 0));
+      topDownLight.position.copy(topPosition);
+      topDownLight.target.position.copy(cubeTargetPosition);
+      topDownLight.target.updateMatrixWorld();
+    }
+
+    if (cubeFillLight) {
+      cubeFillLight.position.copy(camera.position).add(new THREE.Vector3(0, 60, 20));
+    }
 
     // Update bust rotations
     clickableBusts.forEach((bust) => {

@@ -124,7 +124,7 @@ export function createVideoObject(scene, videoElement, options = {}) {
 
       mesh.position.x = (i - xgrid / 2) * xsize;
       mesh.position.y = (j - ygrid / 2) * ysize + 150;
-      mesh.position.z = -350;
+      mesh.position.z = -150;
 
       mesh.scale.x = mesh.scale.y = mesh.scale.z = 1;
 
@@ -156,7 +156,36 @@ export function createVideoObject(scene, videoElement, options = {}) {
     counter = 1;
 
   function updateVideo() {
-    const time = Date.now() * 0.00005;
+    if (counter > 599) {
+      const fadeProgress = Math.min(1, (counter - 599) / 160);
+      const alpha = 1 - fadeProgress;
+
+      for (let i = 0; i < cube_count; i++) {
+        const material = materials[i];
+        const mesh = meshes[i];
+
+        material.transparent = true;
+        material.opacity = alpha;
+        material.needsUpdate = true;
+      }
+
+      if (alpha <= 0) {
+        console.log("All cubes faded out, hiding meshes and materials.");
+        for (let i = 0; i < cube_count; i++) {
+          const mesh = meshes[i];
+          const material = materials[i];
+          mesh.visible = false;
+          material.visible = false;
+        }
+        counter = 1;
+        return;
+      }
+
+      counter++;
+      return;
+    }
+
+    const time = Date.now() * 0.000002;
 
     // Update video texture every frame if in video mode
     if (!useImage && texture) {
@@ -170,20 +199,20 @@ export function createVideoObject(scene, videoElement, options = {}) {
       material.color.setHSL(h, material.saturation, 0.5);
     }
 
-    if (counter % 1000 > 500) {
+    if (counter % 250 > 100) {
       for (let i = 0; i < cube_count; i++) {
         const mesh = meshes[i];
 
         mesh.rotation.x += 10 * mesh.dx;
         mesh.rotation.y += 10 * mesh.dy;
 
-        mesh.position.x -= 150 * mesh.dx;
-        mesh.position.y += 150 * mesh.dy;
+        mesh.position.x -= 250 * mesh.dx;
+        mesh.position.y += 250 * mesh.dy;
         mesh.position.z += 300 * mesh.dx;
       }
     }
 
-    if (counter % 1000 === 0) {
+    if (counter % 250 === 0) {
       for (let i = 0; i < cube_count; i++) {
         const mesh = meshes[i];
 
