@@ -316,8 +316,8 @@ export async function createOceanWorld(renderer, container) {
     }
   }
 
-  await createBustPedestal(smallDevice ? -70 : -120);
-  await createBustPedestal(smallDevice ? 70 : 120);
+  await createBustPedestal(smallDevice ? -60 : -120);
+  await createBustPedestal(smallDevice ? 60 : 120);
 
   // Add a strong camera-linked spotlight aimed at the logo cubes
   const cubeLight = new THREE.SpotLight(0xffffff, 12, 400, Math.PI / 5, 0.4, 2);
