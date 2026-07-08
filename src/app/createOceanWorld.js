@@ -244,7 +244,7 @@ export async function createOceanWorld(renderer, container) {
   async function createBustPedestal(x) {
     // bust GLB 2
     try {
-      const gltf = await loader.loadAsync("/models/gltf/tennyson-bust.glb");
+      const gltf = await loader.loadAsync("tennyson-bust.glb");
       const bust = gltf.scene;
       bust.rotation.y = Math.PI;
 
