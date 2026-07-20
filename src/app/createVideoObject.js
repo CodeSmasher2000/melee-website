@@ -26,24 +26,32 @@ export function createVideoObject(scene, videoElement, options = {}) {
   const xgrid = 20;
   const ygrid = 10;
 
+  // Image paths for cycling
+  const imagePaths = ["/assets/albumcover.jpg", "/assets/ThisIsCover.png"];
+  let currentImageIndex = 0;
+
   // Setup texture - either video or image
   let texture = null;
+  const textureLoader = new THREE.TextureLoader();
 
-  if (useImage && imagePath) {
-    // IMAGE MODE
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(imagePath, (loadedTexture) => {
+  const loadImageTexture = (path) => {
+    textureLoader.load(path, (loadedTexture) => {
       texture = loadedTexture;
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.magFilter = THREE.LinearFilter;
       texture.minFilter = THREE.LinearFilter;
       // Update materials with the texture
       for (let i = 0; i < materials.length; i++) {
+        materials[i].transparent = false;
         materials[i].map = texture;
         materials[i].needsUpdate = true;
       }
-      console.log("Image texture loaded successfully");
     });
+  };
+
+  if (useImage && imagePath) {
+    // IMAGE MODE - start with the provided image
+    loadImageTexture(imagePath);
   } else {
     // VIDEO MODE (default)
     videoElement.crossOrigin = "anonymous";
@@ -170,14 +178,20 @@ export function createVideoObject(scene, videoElement, options = {}) {
       }
 
       if (alpha <= 0) {
-        console.log("All cubes faded out, hiding meshes and materials.");
-        for (let i = 0; i < cube_count; i++) {
-          const mesh = meshes[i];
-          const material = materials[i];
-          mesh.visible = false;
-          material.visible = false;
-        }
+        // console.log("All cubes faded out, hiding meshes and materials.");
+        // for (let i = 0; i < cube_count; i++) {
+        //   const mesh = meshes[i];
+        //   const material = materials[i];
+        //   mesh.visible = false;
+        //   material.visible = false;
+        // }
         counter = 1;
+
+        // Switch to next image if in image mode
+        if (useImage && imagePath) {
+          currentImageIndex = (currentImageIndex + 1) % imagePaths.length;
+          loadImageTexture(imagePaths[currentImageIndex]);
+        }
         return;
       }
 

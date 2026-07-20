@@ -9,8 +9,9 @@ import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeom
 import { createVideoObject } from "./createVideoObject.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { createPiano3D } from "./createPiano3D.js";
 
-export async function createOceanWorld(renderer, container) {
+export async function createOceanWorld(renderer, container, synth) {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
     95,
@@ -19,7 +20,6 @@ export async function createOceanWorld(renderer, container) {
     20000,
   );
   camera.position.set(0, 40, 180);
-  // console.log(window.innerWidth, window.innerHeight);
 
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath(
@@ -177,8 +177,7 @@ export async function createOceanWorld(renderer, container) {
         emissive: 0x121314,
         emissiveIntensity: 0.5,
       });
-    }
-    else if (index === 1) {
+    } else if (index === 1) {
       textureLoader.load("/assets/youtube.svg", (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         cubeMaterial.map = texture;
@@ -191,8 +190,7 @@ export async function createOceanWorld(renderer, container) {
         emissive: 0x121314,
         emissiveIntensity: 0.5,
       });
-    }
-    else if (index === 2) {
+    } else if (index === 2) {
       textureLoader.load("/assets/Instagram.svg", (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         cubeMaterial.map = texture;
@@ -205,8 +203,7 @@ export async function createOceanWorld(renderer, container) {
         emissive: 0x121314,
         emissiveIntensity: 0.5,
       });
-    }
-    else if (index === 3) {
+    } else if (index === 3) {
       textureLoader.load("/assets/mail.png", (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         cubeMaterial.map = texture;
@@ -242,11 +239,18 @@ export async function createOceanWorld(renderer, container) {
     clickableCubes.push(cubeMesh);
 
     const cubePulseLight = new THREE.PointLight(0xff66cc, 2.2, 220, 2);
-    cubePulseLight.position.copy(cubeMesh.position).add(new THREE.Vector3(0, 0, 22));
+    cubePulseLight.position
+      .copy(cubeMesh.position)
+      .add(new THREE.Vector3(0, 0, 22));
     scene.add(cubePulseLight);
     clickableCubesLights.push(cubePulseLight);
 
-    const haloGeom = new THREE.TorusGeometry(cubeSize * 0.55, cubeSize * 0.07, 16, 100);
+    const haloGeom = new THREE.TorusGeometry(
+      cubeSize * 0.55,
+      cubeSize * 0.07,
+      16,
+      100,
+    );
     const haloMat = new THREE.MeshBasicMaterial({
       color: 0xff66cc,
       transparent: true,
@@ -256,7 +260,9 @@ export async function createOceanWorld(renderer, container) {
     });
     const cubeHalo = new THREE.Mesh(haloGeom, haloMat);
     cubeHalo.rotation.x = Math.PI / 2;
-    cubeHalo.position.copy(cubeMesh.position).add(new THREE.Vector3(0, -cubeSize * 0.75, 0));
+    cubeHalo.position
+      .copy(cubeMesh.position)
+      .add(new THREE.Vector3(0, -cubeSize * 0.75, 0));
     scene.add(cubeHalo);
     clickableCubeHalos.push(cubeHalo);
   });
@@ -310,7 +316,6 @@ export async function createOceanWorld(renderer, container) {
       bust.userData.rotationSpeed = 0;
       scene.add(bust);
       clickableBusts.push(bust);
-      console.log("Bust model loaded successfully");
     } catch (e) {
       console.log("Could not load bust model:", e);
     }
@@ -355,6 +360,11 @@ export async function createOceanWorld(renderer, container) {
   controls.minDistance = 40;
   controls.maxDistance = 300;
   controls.update();
+
+  // 3D Piano — only created when synth is provided
+  const piano = synth
+    ? createPiano3D(scene, camera, renderer, synth, controls)
+    : null;
 
   // Add click listener for cubes and busts
   window.addEventListener("click", (event) => {
@@ -422,7 +432,9 @@ export async function createOceanWorld(renderer, container) {
 
     clickableCubeHalos.forEach((halo, index) => {
       const cube = clickableCubes[index];
-      halo.position.copy(cube.position).add(new THREE.Vector3(0, -cubeSize * 0.75, 0));
+      halo.position
+        .copy(cube.position)
+        .add(new THREE.Vector3(0, -cubeSize * 0.75, 0));
       const pulse = 0.12 + Math.abs(Math.sin(time * 3 + index * 1.5)) * 0.06;
       halo.material.opacity = pulse;
       const scale = 1 + Math.sin(time * 3 + index * 1.5) * 0.04;
@@ -430,28 +442,36 @@ export async function createOceanWorld(renderer, container) {
     });
 
     if (cubeLight) {
-      const lightPosition = camera.position.clone().add(new THREE.Vector3(0, 40, 20));
+      const lightPosition = camera.position
+        .clone()
+        .add(new THREE.Vector3(0, 40, 20));
       cubeLight.position.copy(lightPosition);
       cubeLight.target.position.copy(cubeTargetPosition);
       cubeLight.target.updateMatrixWorld();
     }
 
     if (rimLight) {
-      const rimPosition = camera.position.clone().add(new THREE.Vector3(0, 20, 20));
+      const rimPosition = camera.position
+        .clone()
+        .add(new THREE.Vector3(0, 20, 20));
       rimLight.position.copy(rimPosition);
       rimLight.target.position.copy(cubeTargetPosition);
       rimLight.target.updateMatrixWorld();
     }
 
     if (topDownLight) {
-      const topPosition = camera.position.clone().add(new THREE.Vector3(0, 140, 0));
+      const topPosition = camera.position
+        .clone()
+        .add(new THREE.Vector3(0, 140, 0));
       topDownLight.position.copy(topPosition);
       topDownLight.target.position.copy(cubeTargetPosition);
       topDownLight.target.updateMatrixWorld();
     }
 
     if (cubeFillLight) {
-      cubeFillLight.position.copy(camera.position).add(new THREE.Vector3(0, 60, 20));
+      cubeFillLight.position
+        .copy(camera.position)
+        .add(new THREE.Vector3(0, 60, 20));
     }
 
     // Update bust rotations
@@ -471,14 +491,9 @@ export async function createOceanWorld(renderer, container) {
     water.material.uniforms.time.value += delta;
     sky.material.uniforms.time.value = time;
 
-    // parameters.elevation += 0.01;
-    // updateSun();
+    if (piano) piano.update();
     videoObject.updateVideo();
     renderer.render(scene, camera);
-    // if (controls) {
-    //   console.log(controls.target.x, controls.target.y, controls.target.z);
-    // }
-    // stats.update();
   }
 
   return {
