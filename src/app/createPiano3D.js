@@ -164,6 +164,7 @@ export function createPiano3D(scene, camera, renderer, synth, controls) {
   let heldMesh = null;
 
   renderer.domElement.addEventListener("pointerdown", async (e) => {
+    if (camera.position.y > 0) return; // Don't allow piano interaction above sea level
     pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
     pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(pointer, camera);

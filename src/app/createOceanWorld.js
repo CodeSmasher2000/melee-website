@@ -536,6 +536,7 @@ export async function createOceanWorld(renderer, container, synth) {
 
     if (piano) piano.update();
     videoObject.updateVideo();
+    // console.log(camera.position, camera.rotation);
     renderer.render(scene, camera);
   }
 
