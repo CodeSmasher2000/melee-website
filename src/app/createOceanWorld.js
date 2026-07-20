@@ -136,7 +136,7 @@ export async function createOceanWorld(renderer, container, synth) {
 
   // Add 3 decorative cubes in front of the text with pastel colors
   const pastelColors = [0xffb3d9, 0xb3d9ff, 0xb3ffb3, 0xb3f3b3]; // Pastel pink, blue, green
-  const cubeSize = smallDevice ? 8 : 10;
+  const cubeSize = smallDevice ? 10 : 10;
   const cubePositions = smallDevice ? [-24, -8, 8, 24] : [-30, -10, 10, 30]; // Spread along X axis
   const cubeUrls = [
     "https://open.spotify.com/artist/0GrNBtcJYTH8AQ13dqKW6O?si=HgSxavGLSRuhQYF_vYWxhw",
@@ -452,7 +452,7 @@ export async function createOceanWorld(renderer, container, synth) {
       // Spread them horizontally
       cube.position.x += cubePositions[index];
       // Move them lower on the screen
-      cube.position.y -= 60;
+      cube.position.y -= 45;
     });
 
     clickableCubesLights.forEach((light, index) => {
@@ -476,7 +476,7 @@ export async function createOceanWorld(renderer, container, synth) {
     homeButton.position
       .copy(camera.position)
       .addScaledVector(cameraDirection, 75)
-      .add(new THREE.Vector3(0, -75, 0));
+      .add(new THREE.Vector3(0, -65, 0));
     const homePulse = 1 + Math.sin(time * 3) * 0.15;
     homeButton.scale.setScalar(homePulse);
     homeButtonLight.position
