@@ -216,9 +216,9 @@ export function createPiano3D(scene, camera, renderer, synth, controls) {
 
   // Fixed world position — same layer as the statue busts (z = -20)
   // y=1.5 so the chassis bottom sits at ~y=-0.7, matching bust ground level
-  group.position.set(0, -195.5, -110);
-  group.scale.setScalar(4);
-  group.rotation.x = Math.PI / 8; // tilt front edge down toward camera
+  group.position.set(0, -195, -110);
+  group.scale.setScalar(5);
+  group.rotation.x = Math.PI / 4; // tilt front edge down toward camera
   // rotation.y = 0: piano front (+Z face) looks toward the camera's default position (z=180)
 
   return { update: () => {}, group };
