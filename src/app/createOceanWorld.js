@@ -267,6 +267,27 @@ export async function createOceanWorld(renderer, container, synth) {
     clickableCubeHalos.push(cubeHalo);
   });
 
+  // Create home button sphere
+  const homeButtonGeom = new THREE.SphereGeometry(6, 32, 32);
+  const homeButtonMat = new THREE.MeshStandardMaterial({
+    color: 0x00ff88,
+    roughness: 0.2,
+    metalness: 0.8,
+    emissive: 0x00ff88,
+    emissiveIntensity: 0.4,
+  });
+  const homeButton = new THREE.Mesh(homeButtonGeom, homeButtonMat);
+  homeButton.position.set(0, 130, -10); // Below the cubes
+  homeButton.userData.isHomeButton = true;
+  scene.add(homeButton);
+
+  // Home button light
+  const homeButtonLight = new THREE.PointLight(0x00ff88, 3, 150, 2);
+  homeButtonLight.position
+    .copy(homeButton.position)
+    .add(new THREE.Vector3(0, 0, 15));
+  scene.add(homeButtonLight);
+
   // Setup video object
   const videoElement = document.getElementById("video");
   // const videoObject = createVideoObject(scene, videoElement);
@@ -373,6 +394,16 @@ export async function createOceanWorld(renderer, container, synth) {
 
     raycaster.setFromCamera(mouse, camera);
 
+    // Check for home button click
+    const homeButtonIntersects = raycaster.intersectObject(homeButton);
+    if (homeButtonIntersects.length > 0) {
+      // Reset camera to initial position
+      camera.position.set(0, 40, 180);
+      controls.target.set(0, 70, 0);
+      controls.update();
+      return;
+    }
+
     // Check for cube clicks
     const cubeIntersects = raycaster.intersectObjects(clickableCubes);
     if (cubeIntersects.length > 0) {
@@ -440,6 +471,18 @@ export async function createOceanWorld(renderer, container, synth) {
       const scale = 1 + Math.sin(time * 3 + index * 1.5) * 0.04;
       halo.scale.set(scale, scale, scale);
     });
+
+    // Update home button to follow camera and pulse
+    homeButton.position
+      .copy(camera.position)
+      .addScaledVector(cameraDirection, 75)
+      .add(new THREE.Vector3(0, -75, 0));
+    const homePulse = 1 + Math.sin(time * 3) * 0.15;
+    homeButton.scale.setScalar(homePulse);
+    homeButtonLight.position
+      .copy(homeButton.position)
+      .add(new THREE.Vector3(0, 0, 15));
+    homeButtonLight.intensity = 2.5 + Math.sin(time * 3) * 0.8;
 
     if (cubeLight) {
       const lightPosition = camera.position
