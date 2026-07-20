@@ -25,6 +25,12 @@ let world;
 
   window.addEventListener("resize", world.onResize);
 
+  // Hide loading screen once scene is ready
+  const loadingScreen = document.getElementById("loading-screen");
+  if (loadingScreen) {
+    loadingScreen.classList.add("hidden");
+  }
+
   renderer.setAnimationLoop(() => {
     world.renderFrame();
   });
