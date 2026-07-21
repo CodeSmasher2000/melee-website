@@ -139,8 +139,8 @@ export async function createOceanWorld(renderer, container, synth) {
   const cubeSize = smallDevice ? 10 : 10;
   const cubePositions = smallDevice ? [-24, -8, 8, 24] : [-30, -10, 10, 30]; // Spread along X axis
   const cubeUrls = [
-    "https://open.spotify.com/artist/0GrNBtcJYTH8AQ13dqKW6O?si=HgSxavGLSRuhQYF_vYWxhw",
-    "https://youtu.be/MEfXX-nsxhQ?si=jz_i4UfG1BauwJ__",
+    "https://open.spotify.com/track/2QfZ572Yx64Z3W3ijWUl2E?si=308777bc6c21438c",
+    "https://www.youtube.com/watch?v=nvK8Tg9j8r0",
     "https://instagram.com/jonatanwahlstedt",
     "mailto:jonatanwahlstedt@gmail.com",
   ];
