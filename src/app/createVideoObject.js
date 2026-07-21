@@ -178,13 +178,6 @@ export function createVideoObject(scene, videoElement, options = {}) {
       }
 
       if (alpha <= 0) {
-        // console.log("All cubes faded out, hiding meshes and materials.");
-        // for (let i = 0; i < cube_count; i++) {
-        //   const mesh = meshes[i];
-        //   const material = materials[i];
-        //   mesh.visible = false;
-        //   material.visible = false;
-        // }
         counter = 1;
 
         // Switch to next image if in image mode
