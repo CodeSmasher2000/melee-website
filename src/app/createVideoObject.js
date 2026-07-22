@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import albumCoverUrl from "../assets/albumcover.jpg";
-import thisIsCoverUrl from "../assets/thisiscover.png";
+import thisIsCoverUrl from "../assets/ThisIsCover.png";
 
 function change_uvs(geometry, unitx, unity, offsetx, offsety) {
   const uvs = geometry.attributes.uv.array;
