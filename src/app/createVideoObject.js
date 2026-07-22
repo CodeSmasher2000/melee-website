@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import albumCoverUrl from "../assets/albumcover.jpg";
+import thisIsCoverUrl from "../assets/thisiscover.png";
 
 function change_uvs(geometry, unitx, unity, offsetx, offsety) {
   const uvs = geometry.attributes.uv.array;
@@ -27,7 +29,7 @@ export function createVideoObject(scene, videoElement, options = {}) {
   const ygrid = 10;
 
   // Image paths for cycling
-  const imagePaths = ["/assets/albumcover.jpg", "/assets/ThisIsCover.png"];
+  const imagePaths = [albumCoverUrl, thisIsCoverUrl];
   let currentImageIndex = 0;
 
   // Setup texture - either video or image

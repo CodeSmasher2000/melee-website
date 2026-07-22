@@ -10,6 +10,7 @@ import { createVideoObject } from "./createVideoObject.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { createPiano3D } from "./createPiano3D.js";
+import albumCoverUrl from "../assets/albumcover.jpg";
 
 export async function createOceanWorld(renderer, container, synth) {
   const scene = new THREE.Scene();
@@ -293,7 +294,7 @@ export async function createOceanWorld(renderer, container, synth) {
   // const videoObject = createVideoObject(scene, videoElement);
   const videoObject = createVideoObject(scene, videoElement, {
     useImage: true,
-    imagePath: "/assets/albumcover.jpg", // Set to true to use a static image instead of video
+    imagePath: albumCoverUrl, // Set to true to use a static image instead of video
   });
 
   // Define createBustPedestal function before calling it
